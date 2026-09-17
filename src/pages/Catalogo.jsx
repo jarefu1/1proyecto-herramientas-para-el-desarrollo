@@ -12,8 +12,9 @@ function Catalogo() {
 
   return (
     <main className="catalogo">
-      <div className="catalogo__header">
-<h1 className="catalogo__title">vista lista</h1>        <input
+     <div className="catalogo__header">
+       <h1 className="catalogo__title">Catálogo Retro. de Mochilas (vista)</h1>
+        <input
           type="text"
           placeholder="Buscar mochila..."
           className="catalogo__search"
@@ -21,7 +22,6 @@ function Catalogo() {
           onChange={(e) => setBusqueda(e.target.value)}
         />
       </div>
-
       {filtradas.length === 0 ? (
         <p className="catalogo__empty">No se encontraron mochilas.</p>
       ) : (

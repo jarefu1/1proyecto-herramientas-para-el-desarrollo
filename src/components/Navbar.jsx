@@ -15,10 +15,10 @@ function Navbar() {
       <div className="navbar__inner">
 
         {/* Círculo con estrella (logo) */}
-        <NavLink to="/" className="navbar__logo">
-          <span>✦</span>
-        </NavLink>
-
+       // Después
+<NavLink to="/" className="navbar__logo" title="MHM-STORE">
+  <span>✦</span>
+</NavLink>
         {/* Píldora blanca con los íconos del menú */}
         <nav className="navbar__pill">
           {links.map((l) => (

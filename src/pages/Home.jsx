@@ -17,9 +17,9 @@ function Home() {
         Encuentra la tuya.
       </p>
 
-      <Link to="/login" className="hero__cta">
-        VER MOCHILAS →
-      </Link>
+      <Link to="/catalogo" className="hero__cta">
+  EXPLORAR COLECCIÓN →
+</Link>
     </main>
   );
 }

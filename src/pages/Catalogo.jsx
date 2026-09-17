@@ -13,7 +13,7 @@ function Catalogo() {
   return (
     <main className="catalogo">
       <div className="catalogo__header">
-<h1 className="catalogo__title">Catálogo Retro. ✦</h1>        <input
+<h1 className="catalogo__title">vista lista</h1>        <input
           type="text"
           placeholder="Buscar mochila..."
           className="catalogo__search"

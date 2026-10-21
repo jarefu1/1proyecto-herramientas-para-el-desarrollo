@@ -2,13 +2,14 @@ import { useState } from "react";
 import ProductCard from "../components/ProductCard";
 import { mochilas } from "../data/mochilas";
 import "./Catalogo.css";
+import { normalizar } from "../utils/normalizar";
 
 function Catalogo() {
   const [busqueda, setBusqueda] = useState("");
 
   const filtradas = mochilas.filter((m) =>
-    m.nombre.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  normalizar(m.nombre).includes(normalizar(busqueda))
+);
 
   return (
     <main className="catalogo">

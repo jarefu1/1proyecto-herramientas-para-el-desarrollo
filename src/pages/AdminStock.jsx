@@ -12,8 +12,18 @@ function AdminStock() {
   };
 
   const agregar = (e) => {
-    e.preventDefault();
-    if (!form.nombre || !form.precio) return;
+  e.preventDefault();
+
+  if (
+    !form.nombre.trim() ||
+    form.precio === "" ||
+    Number(form.precio) < 0 ||
+    form.stock === "" ||
+    Number(form.stock) < 0
+  ) {
+    alert("Ingresa un nombre, un precio válido y un stock igual o mayor que cero.");
+    return;
+  }
 
     const nuevo = {
       id: Date.now(),
@@ -40,17 +50,35 @@ function AdminStock() {
   };
 
   const guardarEdicion = (e) => {
-    e.preventDefault();
-    setItems(
-      items.map((m) =>
-        m.id === editando
-          ? { ...m, nombre: form.nombre, precio: Number(form.precio), stock: Number(form.stock) }
-          : m
-      )
-    );
-    setEditando(null);
-    setForm({ nombre: "", precio: "", stock: "" });
-  };
+  e.preventDefault();
+
+  if (
+    !form.nombre.trim() ||
+    form.precio === "" ||
+    Number(form.precio) < 0 ||
+    form.stock === "" ||
+    Number(form.stock) < 0
+  ) {
+    alert("Ingresa un nombre, un precio válido y un stock igual o mayor que cero.");
+    return;
+  }
+
+  setItems(
+    items.map((m) =>
+      m.id === editando
+        ? {
+            ...m,
+            nombre: form.nombre.trim(),
+            precio: Number(form.precio),
+            stock: Number(form.stock),
+          }
+        : m
+    )
+  );
+
+  setEditando(null);
+  setForm({ nombre: "", precio: "", stock: "" });
+};
 
   const cancelar = () => {
     setEditando(null);

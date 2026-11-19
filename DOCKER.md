@@ -17,6 +17,8 @@ docker logs tienda-mochilas
 
 ## Prueba del contenedor
 
+La imagen se construyó y ejecutó en un runner Linux de GitHub. La portada, `/login`, `/registro` y el archivo JavaScript compilado respondieron con HTTP 200. Una solicitud a un archivo inexistente en `/assets/` devolvió HTTP 404. [Ver ejecución en GitHub Actions](https://github.com/jarefu1/1proyecto-herramientas-para-el-desarrollo/actions/runs/44437609773)
+
 Abre [la portada](http://localhost:8080/) y comprueba que aparece el título «Mochilas hechas para durar». Entra a [Inicio de sesión](http://localhost:8080/login) y [Registro](http://localhost:8080/registro). Recarga ambas páginas para comprobar que siguen funcionando al acceder directamente.
 
 Para verificar las respuestas HTTP desde PowerShell, ejecuta:

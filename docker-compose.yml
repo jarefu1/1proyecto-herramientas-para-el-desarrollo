@@ -1,0 +1,72 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: mhm-store-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+    networks:
+      - mhm-network
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -u$$MARIADB_USER -p$$MARIADB_PASSWORD --silent || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+
+  backend:
+    image: node:22-bookworm-slim
+    container_name: mhm-store-backend
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      API_PORT: 3000
+    ports:
+      - "${API_PORT}:3000"
+    volumes:
+      - ./:/app
+    command: sh -c "if [ ! -d node_modules/express ]; then npm ci --omit=dev; fi && node server/index.js"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - mhm-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mhm-store-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:80"
+    depends_on:
+      - backend
+    networks:
+      - mhm-network
+
+volumes:
+  db_data:
+
+networks:
+  mhm-network:
+    driver: bridge

@@ -1,10 +1,43 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { mochilas } from "../data/mochilas";
 import "./DetalleMochila.css";
 
+const API_MOCHILAS_URL = "http://localhost:3000/api/mochilas";
+
 function DetalleMochila() {
   const { id } = useParams();
-  const mochila = mochilas.find((m) => m.id === Number(id));
+  const [listaMochilas, setListaMochilas] = useState(mochilas);
+
+  useEffect(() => {
+    let activo = true;
+
+    fetch(API_MOCHILAS_URL)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (activo && Array.isArray(data) && data.length > 0) {
+          const enriquecidas = data.map((item) => {
+            const respaldo = mochilas.find((m) => m.id === Number(item.id));
+            return {
+              ...item,
+              imagen: respaldo && (!item.imagen || item.imagen.startsWith("/assets/"))
+                ? respaldo.imagen
+                : item.imagen,
+            };
+          });
+          setListaMochilas(enriquecidas);
+        }
+      })
+      .catch(() => {
+        // Mantiene src/data/mochilas.js como respaldo automático si la API no responde
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const mochila = listaMochilas.find((m) => Number(m.id) === Number(id));
 
   if (!mochila) {
     return (

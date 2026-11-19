@@ -56,6 +56,39 @@ npm run dev
 
 Vite mostrará en la terminal la dirección local para abrir la aplicación en el navegador.
 
+### Ejecutar el frontend con Docker
+
+**Responsable:** Leo (@leochuw1).
+
+El Dockerfile compila React con Node.js 22 y sirve el resultado con Nginx en el **puerto 80 del contenedor**. En Compose, el servicio del frontend puede usar `build: .` y publicar `8080:80`. La imagen contiene el frontend estático. La conexión futura con MariaDB corresponde al backend, que deberá ofrecer una API HTTP para el frontend.
+
+Con Docker en ejecución, usa estos comandos desde la raíz del repositorio:
+
+```bash
+docker build -t mhm-store-frontend:local .
+docker run -d --rm --name mhm-store-frontend -p 127.0.0.1:8080:80 mhm-store-frontend:local
+docker ps --filter name=mhm-store-frontend
+docker logs mhm-store-frontend
+```
+
+Abre `http://localhost:8080/` y comprueba que aparece la portada. Abre directamente `http://localhost:8080/catalogo` y `http://localhost:8080/producto/1`, y recarga cada página para verificar que las rutas de React Router siguen funcionando. Para probar las respuestas HTTP desde PowerShell:
+
+```powershell
+foreach ($route in '/', '/catalogo', '/producto/1', '/login', '/registro', '/admin/stock') {
+    $status = curl.exe -fsS -o NUL -w '%{http_code}' "http://localhost:8080$route"
+    if ($LASTEXITCODE -ne 0 -or $status -ne '200') {
+        throw "Falló la prueba de $route (HTTP $status)"
+    }
+    "$route HTTP $status"
+}
+```
+
+Para detener y eliminar el contenedor de prueba:
+
+```bash
+docker stop mhm-store-frontend
+```
+
 ## 6. Validación del proyecto
 
 El proyecto incluye comandos para revisar el código, ejecutar las pruebas automatizadas y generar la versión de producción.

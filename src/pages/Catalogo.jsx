@@ -1,15 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
 import { mochilas } from "../data/mochilas";
 import "./Catalogo.css";
 import { normalizar } from "../utils/normalizar";
 
+const API_MOCHILAS_URL = "http://localhost:3000/api/mochilas";
+
 function Catalogo() {
   const [busqueda, setBusqueda] = useState("");
+  const [listaMochilas, setListaMochilas] = useState(mochilas);
 
-  const filtradas = mochilas.filter((m) =>
-  normalizar(m.nombre).includes(normalizar(busqueda))
-);
+  useEffect(() => {
+    let activo = true;
+
+    fetch(API_MOCHILAS_URL)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (activo && Array.isArray(data) && data.length > 0) {
+          const enriquecidas = data.map((item) => {
+            const respaldo = mochilas.find((m) => m.id === Number(item.id));
+            return {
+              ...item,
+              imagen: respaldo && (!item.imagen || item.imagen.startsWith("/assets/"))
+                ? respaldo.imagen
+                : item.imagen,
+            };
+          });
+          setListaMochilas(enriquecidas);
+        }
+      })
+      .catch(() => {
+        // Mantiene src/data/mochilas.js como respaldo automático si la API no responde
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const filtradas = listaMochilas.filter((m) =>
+    normalizar(m.nombre).includes(normalizar(busqueda))
+  );
 
   return (
     <main className="catalogo">

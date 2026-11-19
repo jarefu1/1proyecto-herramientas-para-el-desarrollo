@@ -2,11 +2,10 @@ import { NavLink, Link } from "react-router-dom";
 import "./Navbar.css";
 
 const links = [
-  { to: "/",         icon: "⌂", label: "Inicio" },
-  { to: "/favoritos",icon: "♡", label: "Favoritos" },
-  { to: "/cuenta",   icon: "▢", label: "Cuenta" },
-  { to: "/productos",icon: "✦", label: "Productos" },
-  { to: "/ajustes",  icon: "⚙", label: "Ajustes" },
+  { to: "/",            icon: "⌂", label: "Inicio" },
+  { to: "/catalogo",    icon: "✦", label: "Catálogo" },
+  { to: "/registro",    icon: "▢", label: "Registro" },
+  { to: "/admin/stock", icon: "⚙", label: "Stock" },
 ];
 
 function Navbar() {
@@ -15,10 +14,10 @@ function Navbar() {
       <div className="navbar__inner">
 
         {/* Círculo con estrella (logo) */}
-       // Después
-<NavLink to="/" className="navbar__logo" title="MHM-STORE">
-  <span>✦</span>
-</NavLink>
+        <NavLink to="/" className="navbar__logo" title="MHM-STORE">
+          <span>✦</span>
+        </NavLink>
+
         {/* Píldora blanca con los íconos del menú */}
         <nav className="navbar__pill">
           {links.map((l) => (

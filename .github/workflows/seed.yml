@@ -1,0 +1,39 @@
+name: Prueba del seeder MariaDB
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+permissions:
+  contents: read
+jobs:
+  seed:
+    name: Inicializar datos en MariaDB
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Levantar MariaDB y comprobar los datos de prueba
+        run: |
+          container=mhm-seed-ci
+          trap 'docker logs "$container"; docker rm -f -v "$container"' EXIT
+          docker run --detach --name "$container" \
+            --env MARIADB_ROOT_PASSWORD=ci_root --env MARIADB_DATABASE=mhm_store \
+            --mount "type=bind,source=$PWD/database,target=/docker-entrypoint-initdb.d,readonly" \
+            mariadb:10.11
+
+          for attempt in {1..30}; do
+            if docker exec "$container" mariadb-admin ping -h 127.0.0.1 -uroot -pci_root --silent; then
+              break
+            fi
+            sleep 2
+          done
+          docker exec "$container" mariadb-admin ping -h 127.0.0.1 -uroot -pci_root --silent
+
+          query='SELECT COUNT(*), SUM(stock) FROM mochilas;'
+          initial=$(docker exec "$container" mariadb -uroot -pci_root -N -B mhm_store -e "$query")
+          [[ "$initial" == $'6\t71' ]]
+          docker exec "$container" sh -c 'mariadb -uroot -pci_root < /docker-entrypoint-initdb.d/02-seed.sql'
+          repeated=$(docker exec "$container" mariadb -uroot -pci_root -N -B mhm_store -e "$query")
+          [[ "$repeated" == "$initial" ]]
+          echo 'Seeder verificado: 6 productos y 71 unidades antes y después de repetir el script.'

@@ -89,6 +89,8 @@ Para detener y eliminar el contenedor de prueba:
 docker stop mhm-store-frontend
 ```
 
+La prueba en GitHub construyó la imagen y verificó que las seis rutas anteriores y el JavaScript compilado respondieran con HTTP 200. [Ver ejecución de la prueba Docker](https://github.com/jarefu1/1proyecto-herramientas-para-el-desarrollo/actions/runs/44442605525).
+
 ## 6. Validación del proyecto
 
 El proyecto incluye comandos para revisar el código, ejecutar las pruebas automatizadas y generar la versión de producción.

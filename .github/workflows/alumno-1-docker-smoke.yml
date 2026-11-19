@@ -1,0 +1,26 @@
+name: Prueba Docker del alumno 1
+on:
+  push:
+    branches: [codex/alumno-1-docker-smoke]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir la imagen
+        run: docker build --tag tienda-mochilas:local .
+      - name: Iniciar el contenedor y verificar las rutas
+        run: |
+          docker run --detach --rm --name tienda-mochilas --publish 127.0.0.1:8080:80 tienda-mochilas:local
+          trap 'docker logs tienda-mochilas; docker stop tienda-mochilas' EXIT
+          base=http://127.0.0.1:8080
+          curl --retry 10 --retry-connrefused --fail --silent --show-error "$base/" --output /tmp/mochilas-index.html
+          for route in /login /registro; do
+            curl --fail --silent --show-error --write-out "$route HTTP %{http_code}\n" "$base$route" --output /tmp/mochilas-route.html
+            cmp /tmp/mochilas-index.html /tmp/mochilas-route.html
+          done
+          asset=$(grep -oE '/assets/[^" ]+\.js' /tmp/mochilas-index.html)
+          curl --fail --silent --show-error --write-out "JavaScript HTTP %{http_code}\n" "$base$asset" --output /dev/null
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' "$base/assets/inexistente.js")" = 404

@@ -16,7 +16,7 @@ jobs:
           docker run --detach --rm --name tienda-mochilas --publish 127.0.0.1:8080:80 tienda-mochilas:local
           trap 'docker logs tienda-mochilas; docker stop tienda-mochilas' EXIT
           base=http://127.0.0.1:8080
-          curl --retry 10 --retry-connrefused --fail --silent --show-error "$base/" --output /tmp/mochilas-index.html
+          curl --retry 10 --retry-all-errors --retry-delay 1 --max-time 3 --fail --silent --show-error --write-out "/ HTTP %{http_code}\n" "$base/" --output /tmp/mochilas-index.html
           for route in /login /registro; do
             curl --fail --silent --show-error --write-out "$route HTTP %{http_code}\n" "$base$route" --output /tmp/mochilas-route.html
             cmp /tmp/mochilas-index.html /tmp/mochilas-route.html
